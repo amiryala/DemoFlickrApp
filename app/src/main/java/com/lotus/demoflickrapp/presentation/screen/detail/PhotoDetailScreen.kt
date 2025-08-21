@@ -14,10 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.lotus.demoflickrapp.domain.model.Photo
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun PhotoDetailScreen(
     photo: Photo,
@@ -54,8 +55,8 @@ fun PhotoDetailScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             // Full size image with original aspect ratio
-            AsyncImage(
-                model = photo.url.replace("_w", "_b"), // Use larger size for detail view
+            GlideImage(
+                model = photo.url.replace("_w", "_b"), // Use large size (1024px) for detail view
                 contentDescription = photo.title,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -67,8 +67,8 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     
-    // Coil for image loading
-    implementation(libs.coil.compose)
+    // Glide for image loading (replacing Coil)
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     
     // Hilt
     implementation(libs.hilt.android)

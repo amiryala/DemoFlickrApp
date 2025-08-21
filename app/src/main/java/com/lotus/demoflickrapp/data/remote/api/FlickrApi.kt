@@ -29,6 +29,6 @@ interface FlickrApi {
     
     companion object {
         const val BASE_URL = "https://www.flickr.com/"
-        const val API_KEY = "a0222db495999c951dc33702500fdc4d"
+        const val API_KEY = "1bf2b1a704023d08b5e2eb2547e0b21d"
     }
 }
