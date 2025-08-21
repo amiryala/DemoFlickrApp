@@ -66,8 +66,12 @@ class HomeViewModel @Inject constructor(
             result.fold(
                 onSuccess = { photoPage ->
                     _uiState.update { currentState ->
+                        // Filter out any duplicate photos based on ID
+                        val existingIds = currentState.photos.map { it.id }.toSet()
+                        val newPhotos = photoPage.photos.filter { it.id !in existingIds }
+                        
                         currentState.copy(
-                            photos = currentState.photos + photoPage.photos,
+                            photos = currentState.photos + newPhotos,
                             isLoadingMore = false,
                             currentPage = nextPage,
                             totalPages = photoPage.pages,
@@ -100,8 +104,10 @@ class HomeViewModel @Inject constructor(
             getRecentPhotosUseCase(1).fold(
                 onSuccess = { photoPage ->
                     _uiState.update {
+                        // Ensure photos have unique IDs
+                        val uniquePhotos = photoPage.photos.distinctBy { photo -> photo.id }
                         it.copy(
-                            photos = photoPage.photos,
+                            photos = uniquePhotos,
                             isLoading = false,
                             currentPage = 1,
                             totalPages = photoPage.pages,
@@ -127,8 +133,10 @@ class HomeViewModel @Inject constructor(
         searchPhotosUseCase(query, 1).fold(
             onSuccess = { photoPage ->
                 _uiState.update {
+                    // Ensure photos have unique IDs
+                    val uniquePhotos = photoPage.photos.distinctBy { photo -> photo.id }
                     it.copy(
-                        photos = photoPage.photos,
+                        photos = uniquePhotos,
                         isLoading = false,
                         currentPage = 1,
                         totalPages = photoPage.pages,
