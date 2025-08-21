@@ -104,19 +104,6 @@ The app uses the Flickr API with the following endpoints:
 
 API Key is configured in `FlickrApi.kt`
 
-## Building and Running
-
-1. Clone the repository
-2. Open the project in Android Studio
-3. Sync project with Gradle files
-4. Run the app on an emulator or physical device
-
-### Requirements
-- Android Studio Ladybug or newer
-- Minimum SDK: 24 (Android 7.0)
-- Target SDK: 35 (Android 15)
-- Kotlin: 2.0.21
-
 ## Testing
 
 Run unit tests with:
