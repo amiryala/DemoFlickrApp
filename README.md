@@ -4,7 +4,7 @@ A modern Android application built with Jetpack Compose that displays photos fro
 
 ## Features
 
-✅ **Core Requirements**
+**Core Requirements**
 - Browse recent photos from Flickr API
 - Search functionality with real-time results
 - Grid view with 3 columns and square images
@@ -12,7 +12,7 @@ A modern Android application built with Jetpack Compose that displays photos fro
 - Error handling with loading states and snackbar messages
 - Network error retry functionality
 
-✅ **Bonus Features**
+**Bonus Features**
 - Photo detail screen with proper aspect ratio
 - Comprehensive unit test coverage
 - Clean Architecture implementation
@@ -103,19 +103,6 @@ The app uses the Flickr API with the following endpoints:
 - **Search**: `flickr.photos.search`
 
 API Key is configured in `FlickrApi.kt`
-
-## Building and Running
-
-1. Clone the repository
-2. Open the project in Android Studio
-3. Sync project with Gradle files
-4. Run the app on an emulator or physical device
-
-### Requirements
-- Android Studio Ladybug or newer
-- Minimum SDK: 24 (Android 7.0)
-- Target SDK: 35 (Android 15)
-- Kotlin: 2.0.21
 
 ## Testing
 
