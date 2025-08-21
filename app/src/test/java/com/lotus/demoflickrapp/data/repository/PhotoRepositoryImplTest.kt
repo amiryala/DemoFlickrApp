@@ -4,7 +4,12 @@ import com.lotus.demoflickrapp.data.remote.api.FlickrApi
 import com.lotus.demoflickrapp.data.remote.dto.PhotoDto
 import com.lotus.demoflickrapp.data.remote.dto.PhotosPageDto
 import com.lotus.demoflickrapp.data.remote.dto.PhotosResponseDto
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -18,12 +23,18 @@ class PhotoRepositoryImplTest {
     
     @Before
     fun setup() {
+        Dispatchers.setMain(StandardTestDispatcher())
         api = mock()
         repository = PhotoRepositoryImpl(api)
     }
     
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+    
     @Test
-    fun `getRecentPhotos returns success when API call succeeds`() = runBlocking {
+    fun getRecentPhotosReturnsSuccessWhenApiCallSucceeds() = runTest {
         // Given
         val mockPhoto = PhotoDto(
             id = "1",
@@ -53,7 +64,11 @@ class PhotoRepositoryImplTest {
         val result = repository.getRecentPhotos(1)
         
         // Then
-        assertTrue(result.isSuccess)
+        if (result.isFailure) {
+            println("Test failed with error: ${result.exceptionOrNull()?.message}")
+            result.exceptionOrNull()?.printStackTrace()
+        }
+        assertTrue("Expected success but got failure: ${result.exceptionOrNull()?.message}", result.isSuccess)
         result.getOrNull()?.let { photoPage ->
             assertEquals(1, photoPage.photos.size)
             assertEquals("1", photoPage.photos[0].id)
@@ -64,7 +79,7 @@ class PhotoRepositoryImplTest {
     }
     
     @Test
-    fun `getRecentPhotos returns failure when API call fails`() = runBlocking {
+    fun getRecentPhotosReturnsFailureWhenApiCallFails() = runTest {
         // Given
         val exception = RuntimeException("Network error")
         whenever(api.getRecentPhotos(page = 1)).thenThrow(exception)
@@ -78,7 +93,7 @@ class PhotoRepositoryImplTest {
     }
     
     @Test
-    fun `searchPhotos returns success when API call succeeds`() = runBlocking {
+    fun searchPhotosReturnsSuccessWhenApiCallSucceeds() = runTest {
         // Given
         val query = "test"
         val mockPhoto = PhotoDto(
@@ -109,7 +124,11 @@ class PhotoRepositoryImplTest {
         val result = repository.searchPhotos(query, 1)
         
         // Then
-        assertTrue(result.isSuccess)
+        if (result.isFailure) {
+            println("Test failed with error: ${result.exceptionOrNull()?.message}")
+            result.exceptionOrNull()?.printStackTrace()
+        }
+        assertTrue("Expected success but got failure: ${result.exceptionOrNull()?.message}", result.isSuccess)
         result.getOrNull()?.let { photoPage ->
             assertEquals(1, photoPage.photos.size)
             assertEquals("2", photoPage.photos[0].id)
@@ -120,7 +139,7 @@ class PhotoRepositoryImplTest {
     }
     
     @Test
-    fun `searchPhotos returns failure when API call fails`() = runBlocking {
+    fun searchPhotosReturnsFailureWhenApiCallFails() = runTest {
         // Given
         val query = "test"
         val exception = RuntimeException("API error")

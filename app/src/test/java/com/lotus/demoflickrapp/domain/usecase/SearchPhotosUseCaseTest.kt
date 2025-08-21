@@ -3,7 +3,7 @@ package com.lotus.demoflickrapp.domain.usecase
 import com.lotus.demoflickrapp.domain.model.Photo
 import com.lotus.demoflickrapp.domain.model.PhotoPage
 import com.lotus.demoflickrapp.domain.repository.PhotoRepository
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -23,7 +23,7 @@ class SearchPhotosUseCaseTest {
     }
     
     @Test
-    fun `invoke with blank query calls getRecentPhotos`() = runBlocking {
+    fun invokeWithBlankQueryCallsGetRecentPhotos() = runTest {
         // Given
         val page = 1
         val mockPhotoPage = PhotoPage(
@@ -59,7 +59,7 @@ class SearchPhotosUseCaseTest {
     }
     
     @Test
-    fun `invoke with whitespace query calls getRecentPhotos`() = runBlocking {
+    fun invokeWithWhitespaceQueryCallsGetRecentPhotos() = runTest {
         // Given
         val page = 1
         val mockPhotoPage = PhotoPage(
@@ -81,7 +81,7 @@ class SearchPhotosUseCaseTest {
     }
     
     @Test
-    fun `invoke with non-blank query calls searchPhotos`() = runBlocking {
+    fun invokeWithNonBlankQueryCallsSearchPhotos() = runTest {
         // Given
         val query = "nature"
         val page = 1
@@ -118,7 +118,7 @@ class SearchPhotosUseCaseTest {
     }
     
     @Test
-    fun `invoke returns failure when repository returns failure`() = runBlocking {
+    fun invokeReturnsFailureWhenRepositoryReturnsFailure() = runTest {
         // Given
         val query = "test"
         val page = 1

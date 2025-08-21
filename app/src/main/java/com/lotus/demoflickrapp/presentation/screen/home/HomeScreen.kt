@@ -1,6 +1,5 @@
 package com.lotus.demoflickrapp.presentation.screen.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -195,7 +194,6 @@ fun PhotoGridItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box {
-            Log.d("PhotoGridItem", "Loading image for photo ${photo.id}: ${photo.url}")
             GlideImage(
                 model = photo.url,
                 contentDescription = photo.title,

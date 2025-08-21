@@ -36,7 +36,7 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `initial state loads recent photos successfully`() = runTest {
+    fun initialStateLoadsRecentPhotosSuccessfully() = runTest {
         // Given
         val mockPhotoPage = PhotoPage(
             photos = listOf(createMockPhoto("1")),
@@ -47,9 +47,11 @@ class HomeViewModelTest {
         )
         
         whenever(getRecentPhotosUseCase(1)).thenReturn(Result.success(mockPhotoPage))
+        whenever(searchPhotosUseCase("", 1)).thenReturn(Result.success(mockPhotoPage))
         
         // When
         viewModel = HomeViewModel(getRecentPhotosUseCase, searchPhotosUseCase)
+        advanceUntilIdle()
         
         // Then
         viewModel.uiState.test {
@@ -65,13 +67,15 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `initial state handles error when loading recent photos fails`() = runTest {
+    fun initialStateHandlesErrorWhenLoadingRecentPhotosFails() = runTest {
         // Given
         val exception = RuntimeException("Network error")
         whenever(getRecentPhotosUseCase(1)).thenReturn(Result.failure(exception))
+        whenever(searchPhotosUseCase("", 1)).thenReturn(Result.failure(exception))
         
         // When
         viewModel = HomeViewModel(getRecentPhotosUseCase, searchPhotosUseCase)
+        advanceUntilIdle()
         
         // Then
         viewModel.uiState.test {
@@ -83,7 +87,7 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `onSearchSubmit performs search with query`() = runTest {
+    fun onSearchSubmitPerformsSearchWithQuery() = runTest {
         // Given
         val mockInitialPage = PhotoPage(
             photos = listOf(createMockPhoto("1")),
@@ -101,13 +105,15 @@ class HomeViewModelTest {
         )
         
         whenever(getRecentPhotosUseCase(1)).thenReturn(Result.success(mockInitialPage))
+        whenever(searchPhotosUseCase("", 1)).thenReturn(Result.success(mockInitialPage))
         whenever(searchPhotosUseCase("test", 1)).thenReturn(Result.success(mockSearchPage))
         
         viewModel = HomeViewModel(getRecentPhotosUseCase, searchPhotosUseCase)
+        advanceUntilIdle()
         
         // When
         viewModel.onSearchQueryChanged("test")
-        advanceTimeBy(600) // Wait for debounce
+        advanceTimeBy(600)
         
         // Then
         viewModel.uiState.test {
@@ -122,7 +128,7 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `loadMorePhotos adds photos to existing list`() = runTest {
+    fun loadMorePhotosAddsPhotosToExistingList() = runTest {
         // Given
         val mockPage1 = PhotoPage(
             photos = listOf(createMockPhoto("1")),
@@ -140,9 +146,11 @@ class HomeViewModelTest {
         )
         
         whenever(getRecentPhotosUseCase(1)).thenReturn(Result.success(mockPage1))
+        whenever(searchPhotosUseCase("", 1)).thenReturn(Result.success(mockPage1))
         whenever(getRecentPhotosUseCase(2)).thenReturn(Result.success(mockPage2))
         
         viewModel = HomeViewModel(getRecentPhotosUseCase, searchPhotosUseCase)
+        advanceUntilIdle()
         
         // When
         viewModel.loadMorePhotos()
@@ -161,29 +169,51 @@ class HomeViewModelTest {
     }
     
     @Test
-    fun `loadMorePhotos does nothing when already loading`() = runTest {
+    fun loadMorePhotosWorksWithMultipleConsecutiveCalls() = runTest {
         // Given
-        val mockPage = PhotoPage(
+        val mockPage1 = PhotoPage(
             photos = listOf(createMockPhoto("1")),
             page = 1,
             pages = 3,
             perPage = 1,
             total = 3
         )
+        val mockPage2 = PhotoPage(
+            photos = listOf(createMockPhoto("2")),
+            page = 2,
+            pages = 3,
+            perPage = 1,
+            total = 3
+        )
+        val mockPage3 = PhotoPage(
+            photos = listOf(createMockPhoto("3")),
+            page = 3,
+            pages = 3,
+            perPage = 1,
+            total = 3
+        )
         
-        whenever(getRecentPhotosUseCase(1)).thenReturn(Result.success(mockPage))
+        whenever(getRecentPhotosUseCase(1)).thenReturn(Result.success(mockPage1))
+        whenever(searchPhotosUseCase("", 1)).thenReturn(Result.success(mockPage1))
+        whenever(getRecentPhotosUseCase(2)).thenReturn(Result.success(mockPage2))
+        whenever(getRecentPhotosUseCase(3)).thenReturn(Result.success(mockPage3))
         
         viewModel = HomeViewModel(getRecentPhotosUseCase, searchPhotosUseCase)
+        advanceUntilIdle()
         
-        // Simulate already loading more
+        // When
         viewModel.loadMorePhotos()
-        
-        // When trying to load more again immediately
-        val initialPhotosCount = viewModel.uiState.value.photos.size
         viewModel.loadMorePhotos()
+        advanceUntilIdle()
         
-        // Then - should not trigger another load
-        assertEquals(initialPhotosCount, viewModel.uiState.value.photos.size)
+        // Then
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertEquals(3, state.photos.size)
+            assertEquals(3, state.currentPage)
+            assertFalse(state.isLoadingMore)
+            assertFalse(state.hasMorePages)
+        }
     }
     
     private fun createMockPhoto(id: String) = Photo(
