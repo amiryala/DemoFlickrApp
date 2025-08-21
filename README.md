@@ -44,7 +44,7 @@ The app follows **Clean Architecture** principles with clear separation of conce
 - **Architecture**: MVVM with Clean Architecture
 - **Dependency Injection**: Hilt
 - **Networking**: Retrofit + OkHttp
-- **Image Loading**: Coil
+- **Image Loading**: Glide (initially used Coil, switched due to better handling of Flickr's rate limiting)
 - **Asynchronous Programming**: Kotlin Coroutines + Flow
 - **Navigation**: Navigation Compose
 - **Testing**: JUnit, Mockito, Turbine
@@ -149,10 +149,16 @@ Given more time, the following enhancements could be implemented:
 
 ## Known Limitations
 
-- Flickr may rate limit direct image loading in some cases
 - API returns maximum 4,000 results per search query (Flickr limitation)
 - Network requests timeout after 30 seconds
 - No offline mode currently implemented
+
+## Technical Decisions
+
+### Image Loading Library Choice
+Initially implemented with **Coil** for image loading as it's the recommended solution for Jetpack Compose. However, during testing, we encountered HTTP 429 (rate limiting) errors from Flickr's CDN when loading images. 
+
+**Solution**: Switched to **Glide** which handles Flickr's rate limiting more effectively, possibly due to different retry mechanisms or request headers. This resolved all image loading issues while maintaining the same image quality and sizes.
 
 ## Time Spent
 
